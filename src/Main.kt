@@ -1,20 +1,85 @@
+import java.io.File
 
 fun main() {
-    println("================================")
-    println("     TP6 MINI PROJECT")
-    println("================================")
-    println("1. Informasi Proyek")
-    println("2. Nama Pembuat")
-    println("3. Keluar")
-    println("================================")
-    print("Pilih menu: ")
+    val file = File("agenda_tugas_tp6.txt")
+    val daftar = Penyimpanan.muat(file)
+    val service = TugasService(daftar)
 
-    val pilihan = readlnOrNull()
+    var pilihan: Int
 
-    when (pilihan) {
-        "1" -> println("Proyek ini dibuat untuk praktik Git.")
-        "2" -> println("Dibuat oleh Juan Richard.")
-        "3" -> println("Program selesai.")
-        else -> println("Pilihan tidak valid.")
-    }
+    do {
+        println("\n=== AGENDA TUGAS ===")
+        println("1. Tambah tugas")
+        println("2. Tampilkan tugas")
+        println("3. Cari tugas")
+        println("4. Ubah status")
+        println("5. Simpan data")
+        println("6. Hapus tugas")
+        println("0. Keluar")
+
+        print("Pilihan: ")
+        pilihan = readln().toIntOrNull() ?: -1
+
+        when (pilihan) {
+            1 -> {
+                print("ID tugas: ")
+                val id = readln()
+
+                print("Judul tugas: ")
+                val judul = readln()
+
+                println(
+                    if (service.tambah(id, judul))
+                        "Tugas ditambahkan"
+                    else
+                        "Data tidak valid atau ID duplikat"
+                )
+            }
+
+            2 -> service.tampilkan()
+
+            3 -> {
+                print("ID yang dicari: ")
+                val hasil = service.cari(readln())
+
+                println(hasil ?: "Tugas tidak ditemukan")
+            }
+
+            4 -> {
+                print("ID tugas: ")
+
+                println(
+                    if (service.ubahStatus(readln()))
+                        "Status diubah"
+                    else
+                        "Tugas tidak ditemukan"
+                )
+            }
+
+            5 -> {
+                Penyimpanan.simpan(file, daftar)
+                println("Data disimpan")
+            }
+
+            6 -> {
+                print("ID tugas yang ingin dihapus: ")
+                val id = readln()
+
+                println(
+                    if (service.hapus(id))
+                        "Tugas berhasil dihapus"
+                    else
+                        "Tugas tidak ditemukan"
+                )
+            }
+
+            0 -> {
+                Penyimpanan.simpan(file, daftar)
+                println("Program selesai")
+            }
+
+            else -> println("Pilihan tidak tersedia")
+        }
+
+    } while (pilihan != 0)
 }
